@@ -1,0 +1,816 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sun, Xaiver">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="指定全局别名(alias)&#x2F;环境变量为 Java 11 配置 java 命令可以从JDK国内镜像站下载对应的JDK编译后压缩包，解压缩到合适位置。一般是&#x2F;usr文件夹下。我放在了&#x2F;user&#x2F;java&#x2F;jdk-11下。 之后开始配置环境变量。 首先 vim &#x2F;etc&#x2F;profile 对 &#x2F;etc&#x2F;profile 进行编辑，这个文件是 Linux 系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux运维">
+<meta property="og:url" content="https://username.github.io/2023/01/28/Linux%E8%BF%90%E7%BB%B4/index.html">
+<meta property="og:site_name" content="石沉溪洞">
+<meta property="og:description" content="指定全局别名(alias)&#x2F;环境变量为 Java 11 配置 java 命令可以从JDK国内镜像站下载对应的JDK编译后压缩包，解压缩到合适位置。一般是&#x2F;usr文件夹下。我放在了&#x2F;user&#x2F;java&#x2F;jdk-11下。 之后开始配置环境变量。 首先 vim &#x2F;etc&#x2F;profile 对 &#x2F;etc&#x2F;profile 进行编辑，这个文件是 Linux 系统">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-28T06:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-23T13:38:04.456Z">
+<meta property="article:author" content="Sun, Xaiver">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Linux运维 - 石沉溪洞</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"username.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>石沉溪洞</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Linux运维"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-28 14:00" pubdate>
+          2023年1月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          92 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux运维</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="指定全局别名-alias-x2F-环境变量"><a href="#指定全局别名-alias-x2F-环境变量" class="headerlink" title="指定全局别名(alias)&#x2F;环境变量"></a>指定全局别名(alias)&#x2F;环境变量</h1><h2 id="为-Java-11-配置-java-命令"><a href="#为-Java-11-配置-java-命令" class="headerlink" title="为 Java 11 配置 java 命令"></a>为 Java 11 配置 java 命令</h2><p>可以从<a target="_blank" rel="noopener" href="https://www.injdk.cn/">JDK国内镜像站</a>下载对应的JDK编译后压缩包，解压缩到合适位置。一般是&#x2F;usr文件夹下。我放在了&#x2F;user&#x2F;java&#x2F;jdk-11下。</p>
+<p>之后开始配置环境变量。</p>
+<p>首先 <code>vim /etc/profile</code> 对 <code>/etc/profile</code> 进行编辑，这个文件是 Linux 系统下环境变量的大管家。</p>
+<p>在文件最下方加入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">COPYexport JAVA_HOME=/usr/java/jdk-11<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$JAVA_HOME</span>/bin:<span class="hljs-variable">$PATH</span><br></code></pre></td></tr></table></figure>
+
+<p>完成后输入 <code>:wq</code> 退出vim的编辑视图。</p>
+<p>随后 source &#x2F;etc&#x2F;profile 使得修改立刻生效。</p>
+<p>再输入 <code>java -version</code> 应当有如下输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">COPYopenjdk version <span class="hljs-string">&quot;11&quot;</span> 2018-09-25<br>OpenJDK Runtime Environment 18.9 (build 11+28)<br>OpenJDK 64-Bit Server VM 18.9 (build 11+28, mixed mode)<br></code></pre></td></tr></table></figure>
+
+<p>说明安装已经完成。</p>
+<h2 id="同时安装-Java-8"><a href="#同时安装-Java-8" class="headerlink" title="同时安装 Java 8"></a>同时安装 Java 8</h2><p>给 Java 8 的 JDK 使用 java8 的别名去调用，即运行它等于运行 jJava 8 所在目录（下载 Java 8 的压缩包解压后出来的文件夹）的 bin 目录下的 java。</p>
+<p>对应操作：</p>
+<p>在<code>/etc/profile</code>文件中写入一行 <code>alias java11=&#39;/usr/openjdk8/bin/java&#39;</code>，然后在终端中输入并回车<code>source /etc/profile</code></p>
+<h1 id="设置软连接"><a href="#设置软连接" class="headerlink" title="设置软连接"></a>设置软连接</h1><p><code>ln -s 要被链接上的文件（夹）的路径 用来链接到那个文件（夹）的文件</code></p>
+<p>在 nginx 配置自己的 webapp 时有这样一个操作：</p>
+<p>COPYln -s &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;example.com &#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F;<br>这里 &#x2F;etc&#x2F;nginx&#x2F;sites-available&#x2F;example.com 是被链接的对象</p>
+<p>&#x2F;etc&#x2F;nginx&#x2F;sites-enabled&#x2F; 是链接？并不。因为它是一个目录，而目标却是一个文件。那么此时会在目录下自动生成一个名为 example.com 的文件用于对应目标文件以进行连接。但如果这里就是一个第一个参数就是一个文件，那么这个文件就会成为链接，即便文件名不同。</p>
+<h1 id="Shell-脚本"><a href="#Shell-脚本" class="headerlink" title="Shell 脚本"></a>Shell 脚本</h1><h2 id="用法"><a href="#用法" class="headerlink" title="$用法"></a>$用法</h2><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$0</td>
+<td>当前脚本的文件名</td>
+</tr>
+<tr>
+<td>$n</td>
+<td>传递给脚本或函数的参数。n 是一个数字，表示第几个参数。例如，第一个参数是$1，第二个参数是$2。</td>
+</tr>
+<tr>
+<td>$#</td>
+<td>传递给脚本或函数的参数个数。</td>
+</tr>
+<tr>
+<td>$*</td>
+<td>传递给脚本或函数的所有参数。被双引号(“ “)包含时，返回用空格分隔开各参数的字符串。</td>
+</tr>
+<tr>
+<td>$@</td>
+<td>传递给脚本或函数的所有参数。被双引号(“ “)包含时，返回一个参数的数组。</td>
+</tr>
+<tr>
+<td>$?</td>
+<td>上个命令的退出状态，或函数的返回值。</td>
+</tr>
+<tr>
+<td>$$</td>
+<td>当前Shell进程ID。在 Shell 脚本中的话就对应运行这脚本所在的进程ID。</td>
+</tr>
+</tbody></table>
+<h1 id="tar-解压文件"><a href="#tar-解压文件" class="headerlink" title="tar 解压文件"></a>tar 解压文件</h1><p>指令是 tar</p>
+<p>对于后缀名中有 .tar 的，需要带参数 x 表示解压缩，与之对应的是参数 c 表示将制定目录压缩成一个压缩文件。</p>
+<p>对于后缀名带有 .gz 的，要带参数 z 表示需要 gzip 参与。解压缩与压缩都是这个参数。</p>
+<p>带 v 参数则会输出解压缩过程。</p>
+<p>带 f 参数后才可以跟待解压文件的文件名，如果仅使用上述参数就跟文件名（tar -xvz nginx-1.18.0.tar.gz） 会得到这样的错误提示： </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">COPYtar: Refusing to <span class="hljs-built_in">read</span> archive contents from terminal (missing -f option?)<br>tar: Error is not recoverable: exiting now<br></code></pre></td></tr></table></figure>
+
+<p>在参数 C 后跟压缩文件被解压到的文件夹。注意：文件夹自身必须已经存在。</p>
+<p>综上所述，解压一个 &#x2F;nginx-1.18.0.tar.gz 可以使用如下代码</p>
+<p><code>tar -xvzf ./nginx-1.18.0.tar.gz -C /usr/nginx/1.18.0/</code></p>
+<h1 id="Is-the-system-based-on-AMD64"><a href="#Is-the-system-based-on-AMD64" class="headerlink" title="Is the system based on AMD64"></a>Is the system based on AMD64</h1><p>在下载软件的时候，经常会看到文件名后面跟着架构 -amd64, -arm64 之类的。一般 PC 系统都是基于 AMD64 的 CPU 架构，可以通过如下方式确认：</p>
+<p><code>uname -a</code> 或者 <code>cat /proc/version</code></p>
+<p>得到如下结果，其中 -amd64 表明是 AMD64 架构。</p>
+<p><code>Linux VM-133-145-debian 4.9.0-12-amd64 #1 SMP Debian 4.9.210-1 (2020-01-20) x86_64 GNU/Linux</code></p>
+<h1 id="当前系统是什么版本"><a href="#当前系统是什么版本" class="headerlink" title="当前系统是什么版本"></a>当前系统是什么版本</h1><p>遗忘了自己当初选择安装了什么版本的系统，只记得是 debian？可以用如下命令检查：</p>
+<p><code>lsb_release -a</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">No LSB modules are available.<br>Distributor ID:    Debian<br>Description:    Debian GNU/Linux 9.0 (stretch)<br>Release:    9.0<br>Codename:    stretch<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.tecmint.com/check-debian-version/">How to Check Debian Linux Version</a></p>
+<blockquote>
+<p>It’s quite often that we keep forgetting which version of the Debian operating system we are using and this mostly happens when you log in to the Debian server after a long time or are you looking for a software that is available for a specific version of Debian only.</p>
+</blockquote>
+<h1 id="systemctl-系统服务管理器"><a href="#systemctl-系统服务管理器" class="headerlink" title="systemctl 系统服务管理器"></a>systemctl 系统服务管理器</h1><p>通过 apt-get 等包管理安装的软件一般会向系统注册自己的服务，之后可通过 systemctl 来管理。</p>
+<p>从源码编译安装（比如Redis就可以这么装）的软件也可能配置了向 systemctl 注册自己服务的步骤。</p>
+<h2 id="确认-systemctl-本身已经安装"><a href="#确认-systemctl-本身已经安装" class="headerlink" title="确认 systemctl 本身已经安装"></a>确认 systemctl 本身已经安装</h2><p><code>systemctl --version</code></p>
+<p>如果 systemctl 本身已经安装，应该得到其版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@VM-133-145-debian:~<span class="hljs-comment"># clear</span><br>root@VM-133-145-debian:~<span class="hljs-comment"># systemctl --version</span><br>systemd 232<br>+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN<br></code></pre></td></tr></table></figure>
+
+<h2 id="使用-systemctl-列出所有服务"><a href="#使用-systemctl-列出所有服务" class="headerlink" title="使用 systemctl 列出所有服务"></a>使用 systemctl 列出所有服务</h2><p>包括此时并不在运行的。</p>
+<p><code>systemctl</code></p>
+<p>可以结合 <code>grep</code> 使用</p>
+<p>比如，找到 nginx 服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@VM-133-145-debian:~<span class="hljs-comment"># systemctl | grep nginx</span><br>nginx.service    loaded active running   A high performance web server and a reverse proxy server        enabled<br></code></pre></td></tr></table></figure>
+
+<p>比如，只看正在运行中的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@VM-133-145-debian:~<span class="hljs-comment"># systemctl | grep running</span><br>acpid.path                                                        loaded active running   ACPI Events Check                                                 <br>init.scope                                                        loaded active running   System and Service Manager                                        <br>session-147197.scope                                              loaded active running   Session 147197 of user root                                       <br>acpid.service                                                     loaded active running   ACPI event daemon                                                 <br>cron.service                                                      loaded active running   Regular background program processing daemon                      <br><span class="hljs-comment">#...</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="检查某个服务的运行状态"><a href="#检查某个服务的运行状态" class="headerlink" title="检查某个服务的运行状态"></a>检查某个服务的运行状态</h2><p><code>systemctl status $&#123;service-name&#125;</code></p>
+<p>检查名为 service-name 的服务的运行状态。</p>
+<p>一个正常运行的程序在查询时得到的结果应该和如下类似：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@VM-4-3-debian:~/downloads<span class="hljs-comment"># systemctl status mysql</span><br>● mysql.service - MySQL Community Server<br>   Loaded: loaded (/lib/systemd/system/mysql.service; enabled; vendor preset: enabled)<br>   Active: active (running) since Fri 2020-11-06 13:39:01 HKT; 51min ago<br>  Process: 15291 ExecStartPre=/usr/share/mysql/mysql-systemd-start pre (code=exited, status=0/SUCCESS)<br>  Process: 15326 ExecStart=/usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid (code=exited, status=0/SUCCESS)<br> Main PID: 15328 (mysqld)<br>    Tasks: 28 (<span class="hljs-built_in">limit</span>: 2202)<br>   Memory: 181.6M<br>   CGroup: /system.slice/mysql.service<br>           └─15328 /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid<br><br>Nov 06 13:39:01 VM-4-3-debian systemd[1]: Starting MySQL Community Server...<br>Nov 06 13:39:01 VM-4-3-debian systemd[1]: Started MySQL Community Server.<br></code></pre></td></tr></table></figure>
+
+<p>一个不存在的程序：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@VM-4-3-debian:~/downloads<span class="hljs-comment"># systemctl status redis</span><br>Unit redis.service could not be found.<br></code></pre></td></tr></table></figure>
+
+<h2 id="控制一个服务启停"><a href="#控制一个服务启停" class="headerlink" title="控制一个服务启停"></a>控制一个服务启停</h2><figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs nsis"><span class="hljs-params">system</span>ctl start httpd<br><span class="hljs-params">system</span>ctl restart httpd<br><span class="hljs-params">system</span>ctl stop httpd<br><span class="hljs-params">system</span>ctl reload httpd<br><span class="hljs-params">system</span>ctl kill httpd<br></code></pre></td></tr></table></figure>
+
+<p>启动，重启，停止，重载和杀死 httpd 服务。这里 httpd 可以更换为其它服务。注意到之前列出所有服务时，被列出的服务都跟着一个 .service，这个其实是可以省略的。</p>
+<p><code>systemctl enable xxx.service</code> 可以使某个服务开机自动启动</p>
+<p><code>systemctl disable xxx.service</code> 则是禁止某个服务开机自动启动</p>
+<h2 id="将一个软件注册为-systemctl-的服务"><a href="#将一个软件注册为-systemctl-的服务" class="headerlink" title="将一个软件注册为 systemctl 的服务"></a>将一个软件注册为 systemctl 的服务</h2><p>鉴于 apt-get 上的很多软件的版本都相比最新稳定版要旧，不可避免地要遇到自行手动编译安装一个软件的情况。将这样的软件托管到 systemctl 将便于调整其开机启动与否的配置以及控制服务启动，重启，停止。</p>
+<p>以手动编译安装的 Nginx 为例。编译安装的过程与本节无关，结果上最后 Nginx 被安装在了 <code>/usr/local/nginx/</code> 中。若不使用 systemctl ，则启动 Nginx 的指令为 <code>/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</code>，重启 Nginx 的命令为 <code>/usr/local/nginx/sbin/nginx -s reload</code>，停止 Nginx 的命令为 <code>/usr/local/nginx/sbin/nginx -s stop</code>。</p>
+<p>而我们想要可以通过</p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs nsis"><span class="hljs-params">system</span>ctl start nginx<br><span class="hljs-params">system</span>ctl restart nginx<br><span class="hljs-params">system</span>ctl stop nginx<br></code></pre></td></tr></table></figure>
+
+<p>来控制 nginx 服务。</p>
+<p>实现方法：</p>
+<p><code> systemctl edit --force nginx.service</code></p>
+<p>调用 systemctl 为 nginx 服务编辑配置文件，由于 nginx 之前并未注册，所以不存在编辑。但因为 <code>--force</code> 参数，所以 systemctl 就会为其创建一个配置文件以编辑。这个文件在 <code>/etc/systemd/system/nginx.service</code> 目录下。</p>
+<p>编辑 <code>/etc/systemd/system/nginx.service/nginx.service</code> 文件，添加如下内容：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs gradle">[Unit]<br><span class="hljs-keyword">Description</span>=nginx - high performance web server<br>After=network.target remote-fs.target nss-lookup.target<br><br>[Service]<br>Type=forking<br>ExecStart=<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/nginx/</span>sbin<span class="hljs-regexp">/nginx -c /u</span>sr<span class="hljs-regexp">/local/</span>nginx<span class="hljs-regexp">/conf/</span>nginx.conf<br>ExecReload=<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/nginx/</span>sbin/nginx -s reload<br>ExecStop=<span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/nginx/</span>sbin/nginx -s stop<br><br>[Install]<br>WantedBy=multi-user.target<br></code></pre></td></tr></table></figure>
+
+<p>其中各字段的意义是：</p>
+<blockquote>
+<p>[Unit]：systemctl 认为每个被管理的资源都是一个 Unit。<br>Description：描述该服务。</p>
+<p>After：依赖，当依赖的服务启动之后再启动自定义的服务。</p>
+<p>[Service]：服务运行参数的设置</p>
+<p>Type：程序运行的形式。forking指程序在后台运行。</p>
+<p>ExecStart：systemctl start nginx.service 时调用这个字段的值。这里不能使用别名，依赖PATH路径和相对路径之类的偷懒写法。</p>
+<p>ExecReload：对应 systemctl reload</p>
+<p>ExecStop：对应 systemctl stop</p>
+<p>注意：启动、重启、停止等命令的值中必须使用绝对路径。</p>
+<p>[Install] 服务安装的相关设置</p>
+<p>wantedBy：挂载在 &#x2F;etc&#x2F;systemd&#x2F;system&#x2F; 目录下的哪个文件夹里。这个字段的值还有其他指导服务挂载和安装的语义的作用，但我没有搜索到靠谱资料，一般都是 multi-user.target。</p>
+</blockquote>
+<p>使用 <code>systemctl daemon-reload nginx.service</code> 让 systemctl 重载服务的配置文件。之后<code>systemctl start nginx</code>等就可用了。</p>
+<h1 id="x2F-usr-与-x2F-usr-x2F-local-与-x2F-opt"><a href="#x2F-usr-与-x2F-usr-x2F-local-与-x2F-opt" class="headerlink" title="&#x2F;usr 与 &#x2F;usr&#x2F;local 与 &#x2F;opt"></a>&#x2F;usr 与 &#x2F;usr&#x2F;local 与 &#x2F;opt</h1><p>linux 中 <code>/opt</code> 目录用来安装附加软件包，是用户级的程序目录，可以理解为 <code>D:/Software</code>。被安装到 &#x2F;opt 目录下的程序，应当满足所有的数据、库文件等等都是放在同个目录下面。类比于 windows 系统，有点像我们下载到了一个软件的绿色解压即用版，然后我们把压缩包解压缩出来得到一个文件夹，里面包含这个软件的所有文件。这个文件夹就该放到<code>D:/Software</code>。</p>
+<p>opt 有可选的意思，这里可以用于放置第三方大型软件。当你不需要时，直接 rm -rf 掉即可。在硬盘容量不够时，也可将 &#x2F;opt 单独挂载到其他磁盘上使用。</p>
+<p>linux 中 <code>/usr</code> 为系统级的目录，可以理解为 C:&#x2F;Windows&#x2F;。</p>
+<p>linux 中 <code>/usr/local</code> 目录为用户级的程序目录，可以理解为 C:&#x2F;Progrem Files&#x2F;。用户自己编译安装的软件一般默认会安装到这个目录下。apt-get 安装的软件一般也是。</p>
+<h1 id="确认某个进程使用的用户"><a href="#确认某个进程使用的用户" class="headerlink" title="确认某个进程使用的用户"></a>确认某个进程使用的用户</h1><p>在编译安装了 nginx 后，在访问网页资源时遇到了 403 错误，猜测原因是 Nginx 并无权限访问文档根目录。此时确认自己的猜测原因就需要了解 nginx 的主进程是以什么用户在运行的。</p>
+<p>因此输入 <code>ps aux | grep nginx</code> 得到：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">nobody</span> <span class="hljs-number">31731</span> <span class="hljs-number">0</span>.<span class="hljs-number">0</span> <span class="hljs-number">0</span>.<span class="hljs-number">1</span> <span class="hljs-number">25376</span> <span class="hljs-number">2304</span> ? S <span class="hljs-number">16</span>:<span class="hljs-number">39</span> <span class="hljs-number">0</span>:<span class="hljs-number">00</span> nginx: worker process<br></code></pre></td></tr></table></figure>
+
+<p>第一列的结果 nobody 表明 Nginx 的主进程以 nobody 用户运行而非 root，因此猜想基本是正确的。</p>
+<p>既然都说到这里了解决方案也就说了吧。在 Nginx 的配置文件（一般是 <code>/usr/local/nginx/conf/nginx.conf</code> ）中最高层级添加 user root 使得 Nginx 以 root 身份运行。</p>
+<h1 id="修改某个文件-x2F-文件夹的权限控制"><a href="#修改某个文件-x2F-文件夹的权限控制" class="headerlink" title="修改某个文件&#x2F;文件夹的权限控制"></a>修改某个文件&#x2F;文件夹的权限控制</h1><p>chmod 命令，其最常见的用法的参数搭配是这样的：</p>
+<p><code>chmod [ugoa][+-=][rwxX]</code></p>
+<p>其中三个参数依次意义为</p>
+<p>u 表示该文件的拥有者，g 表示与该文件的拥有者属于同一个群体(group)者，o 表示其他以外的人，a 表示这三者皆是。</p>
+<ul>
+<li>表示增加权限、- 表示取消权限、&#x3D; 表示唯一设定权限。<br>r 表示可读取，w 表示可写入，x 表示可执行。</li>
+</ul>
+<h1 id="管理-Java-程序"><a href="#管理-Java-程序" class="headerlink" title="管理 Java 程序"></a>管理 Java 程序</h1><p>如果在一个终端上输入 <code>java -jar a-project.jar</code> 或 <code>mvn spring-boot:run</code>，则这个终端将被这个指令的后续输出给占用。同时如果关闭这个终端，其它终端也管不到这个 java 程序。这两件事都是不运维的。</p>
+<h2 id="nohup"><a href="#nohup" class="headerlink" title="nohup"></a>nohup</h2><p><code>nohup command [&gt;file.out] [2&gt;&amp;1] [&amp;]</code></p>
+<p>command 将标准输出输出到 file.out 文件，从而避免了 command 命令的标准输出占用当前终端的问题。这里的 file.out 当然是可以随便改名的，my-project-name.log什么的都行。但是文件所在的文件夹必须都已经存在，nohup只会创建文件，不创建文件夹。</p>
+<p>如果省略 <code>&gt;file.out</code>，则默认重定向到 .&#x2F;nohup.out。</p>
+<p>如果最终的结尾不带 &amp;，则 command 的标准输出被重定向了，但nohup命令的标准输出没重定向，还是会占用当前终端。而带上 &amp; 则不会有此问题。</p>
+<p><code>[2&gt;&amp;1]</code> 中 2 代表的是标准错误输出（stderr），&amp;1 代表的是标准输出（stdout），这整个参数的意思就是将标准错误输出输出的目标重定向到标准输出（的输出目标）。而由于前面已经将标准输出重定向到 file.out，故最终 stderr 也重定向到 file.out。</p>
+<p>因此我们可以写出这样一个 bash 脚本来管理 Java 程序的启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">COPY<span class="hljs-comment">#!/bin/bash</span><br><br><span class="hljs-built_in">cd</span> ~/projects/example/example-backend/<br><br><span class="hljs-built_in">nohup</span> mvn spring-boot:run &gt;~/projects/example/logs/example.out 2&gt;&amp;1 &amp;<br></code></pre></td></tr></table></figure>
+
+<h2 id="netstat-与-grep-与-awk-与-xargs"><a href="#netstat-与-grep-与-awk-与-xargs" class="headerlink" title="netstat 与 grep 与 awk 与 xargs"></a>netstat 与 grep 与 awk 与 xargs</h2><p>在用 bash 脚本管理了 Java 程序的启动后，剩下的问题是如何结束这个 Java 程序。</p>
+<p>此处先给出解决方案再来分析:</p>
+<p><code>netstat -lp | grep 7500 | awk &#39;&#123;print $7&#125;&#39; | awk -F/ &#39;&#123;print $1&#125;&#39; | xargs kill -15;</code></p>
+<p>然后分析这个命令是怎么回事儿。</p>
+<p>首先是管道符 |，它能够将前一个命令的标准输出作为后一个命令的标准输入传过去。</p>
+<p>然后是 netstat，它可以显示网络状态。我这里的思路是建立在我的 Java 程序是一个 Web 后台应用，并且我配置了这个 java 程序监听 7500 端口。因此相比 <code>ps -ef | grep java</code> 我觉得去筛选出监听 7500 端口的那行程序更精确一点。</p>
+<p>而 <code>netstat -lp -lp</code> 中，p 参数较为重要，它的意义是显示正在使用Socket的程序识别码和程序名称，如果没有这个参数，即便得到了那一行，那一行里也没有那个 Java 程序的 PID，也就不可能发给 <code>kill -15</code> 去关闭。另一个 l 参数则是将展示的 Socket 过滤一遍，只展示其中我方主机作为 server 的套接字。这个其实加不加对于脚本命令影响不大，因为最后都能被 grep 7500 筛出那一行 Java 程序。不过加了之后会让输出的内容在人阅读时更友好。</p>
+<p>再然后是 awk 命令。</p>
+<p>awk 默认将空格（或者说连续的空格）和 Tab 作为分隔符，而 ‘{print $7}’ 的意思就是利用分隔符分隔后，把从左往右数的第7个内容给输出到标准输出上。</p>
+<p><code>netstat -lp | grep 7500</code> 产生的输出是这样的：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elixir">tcp6 <span class="hljs-number">0</span> <span class="hljs-number">0</span> [::]<span class="hljs-symbol">:</span><span class="hljs-number">7500</span> [::]<span class="hljs-symbol">:*</span> <span class="hljs-title class_">LISTEN</span> <span class="hljs-number">21494</span>/java<br></code></pre></td></tr></table></figure>
+
+<p>以空格（连续的空格）为分隔符进行分隔的话，则分别有tcp6，0，0，[::]:7500，[::]:*，LISTEN和21494&#x2F;java。其中第七个的前半部分21494就是Java程序的PID了。</p>
+<p>所以接下来要对 21494&#x2F;java 执行 <code>awk -F/ &#39;&#123;print $1&#125;</code> ,这里-F手动指定分隔符，-F&#x2F;的意思就是手动指定&#x2F;为分隔符，然后输出第一个，也就得到了 PID。</p>
+<p>最后是 xargs 命令。为什么这里不能直接 | kill -15 呢？因为kill -15 期待的是一个作为参数的 PID 而不从标准输入里取 PID。而 xargs 的作用正是将自己的标准输入的内容转换为后面的指令的参数。如此搭配，也就最终等价于kill -15 21494了。</p>
+<h1 id="修改用户密码"><a href="#修改用户密码" class="headerlink" title="修改用户密码"></a>修改用户密码</h1><p>使用 root 权限与 <code>passwd $&#123;username&#125;</code> 可以修改指定用户登入系统的密码。</p>
+<p>使用 <code>passwd -S</code> 可以先得到当前系统中所有注册的账户。</p>
+<h1 id="SSH-Login"><a href="#SSH-Login" class="headerlink" title="SSH Login"></a>SSH Login</h1><h2 id="Enable-SSH-Password-Login-via-root"><a href="#Enable-SSH-Password-Login-via-root" class="headerlink" title="Enable SSH Password Login via root"></a>Enable SSH Password Login via root</h2><p>Debian 上 SSH 默认是禁止外部通过 SSH 并基于密码校验的方式以 root 账号登进来的。所以我们需要先修改配置使其允许。</p>
+<p>不过这一步对于云服务器来说应该是不需要的，我是因为用的 VM 虚拟机上装 Debian，所以要手动配置。云服务商应该提供了在控制台中添加本地SSH秘钥信息后帮助注入买的云服务器中，并默认开启SSH秘钥对验证，使用户可以快速使用SSH登进服务器系统。</p>
+<p>可以参考<a target="_blank" rel="noopener" href="https://webmentor.online/blog/how-to-enable-ssh-root-login-in-debian-11">How To Enable SSH Root Login In Debian 11</a>这篇文章。</p>
+<p>这样我们就可以用 SSH 软件或者 VS Code 接入我们的系统，方便之后开启使用基于秘钥对的 SSH 验证机制。</p>
+<p><code>nano /etc/ssh/sshd_config</code></p>
+<p>在文件中找到包含 PermitRootLogin 的那一行，默认应该是 <code>#PermitRootLogin prohit-password</code>。</p>
+<p>去掉注释符号，并将第二个参数的值改为 yes，即 <code>PermitRootLogin yes</code>。</p>
+<p>配置的修改完成后，重启 ssh 服务：<code>systemctl restart ssh</code> 以使修改生效。</p>
+<h2 id="Enable-SSH-key-auth-login"><a href="#Enable-SSH-key-auth-login" class="headerlink" title="Enable SSH key auth login"></a>Enable SSH key auth login</h2><p>编辑 <code>/etc/ssh/sshd_config</code> 使有如下的配置项：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">PubkeyAuthentication yes <br><br>AuthorizedKeysFile     <span class="hljs-regexp">/etc/</span>ssh<span class="hljs-regexp">/authorized_keys .ssh/</span>authorized_keys2<br></code></pre></td></tr></table></figure>
+
+<p>然后在客户端这边的系统上找到这边的公钥，一般是 <code>~/.ssh/id_&#123;&#125;.pub</code> 文件的内容。复制之后，写入 <code>/root/.ssh/authorized_keys</code> 和 <code>/root/.ssh/authorized_keys2</code> 文件中。如果这两个文件还不存在，那就创建出来。这样以后 root 用户即可使用 key auth 登录，因为 <code>/root</code> 文件夹是 root 用户的家目录。</p>
+<p>完成后仍然是 <code>systemctl restart ssh</code> 重启 ssh 服务以使新配置生效。之后这边使用 SSH 客户端即可 SSH Key Auth 登录服务器了。</p>
+<h2 id="SSH-原理"><a href="#SSH-原理" class="headerlink" title="SSH 原理"></a>SSH 原理</h2><p>参考了<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d31de2601368">SSH 认证原理</a>一文。</p>
+<h3 id="密码验证方式"><a href="#密码验证方式" class="headerlink" title="密码验证方式"></a>密码验证方式</h3><p>远程主机收到用户的登录请求，把自己的公钥发给用户。</p>
+<p>用户使用这个公钥，将登录密码加密后，发送回来。</p>
+<p>远程主机用自己的私钥，解密登录密码，如果密码正确，就同意用户登录。</p>
+<p>这个过程本身是安全的，但是实施的时候存在一个风险：如果有人截获了登录请求，然后冒充远程主机，将伪造的公钥发给用户，那么用户很难辨别真伪。因为不像 https 协议，SSH 协议的公钥是没有证书中心（CA）公证的，也就是说，都是自己签发的。</p>
+<p>可以设想，如果攻击者插在用户与远程主机之间（比如在公共的 wifi 区域），用伪造的公钥，获取用户的登录密码。再用这个密码登录远程主机，那么 SSH 的安全机制就荡然无存了。这种风险就是著名的中间人攻击。</p>
+<p>这也是为什么第一次登录对方主机时系统会出现下面的提示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">　　$ ssh user@host<br>　　The authenticity of host <span class="hljs-string">&#x27;host (12.18.429.21)&#x27;</span> can<span class="hljs-string">&#x27;t be established.</span><br><span class="hljs-string">　　RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="hljs-string">　　Are you sure you want to continue connecting (yes/no)?</span><br></code></pre></td></tr></table></figure>
+
+<p>这段话的意思是，无法确认 host 主机的真实性，只知道它的公钥指纹，问你还想继续连接吗？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用 RSA 算法，长达 1024位），很难比对，所以对其进行 MD5 计算，将它变成一个 128 位的指纹。上例中是 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对。</p>
+<p>用户输入 yes 表示认为自己的网络连接是安全的或者比对后认为指纹匹配之后，系统将这一公钥保存在文件 <code>$HOME/.ssh/known_hosts</code> 之中并做好与此主机的 IP 的匹配。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。</p>
+<p>这之后可以输入目标主机的目标用户的密码以完成验证的后续步骤。</p>
+<h3 id="Key-Auth"><a href="#Key-Auth" class="headerlink" title="Key Auth"></a>Key Auth</h3><p>所谓”公钥登录”，原理很简单，就是用户将自己的公钥储存在远程主机上。登录的时候，远程主机会向用户发送一段随机字符串，用户用自己的私钥加密后，再发回来。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录，不再要求密码。</p>
+<p>这里会采用非对称加密算法，即经过公钥加密的数据，无法再被公钥解密（所以即便公钥暴露也没有关系）只能被私钥解密。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux/">#Linux</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Linux运维</div>
+      <div>https://username.github.io/2023/01/28/Linux运维/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sun, Xaiver</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01/28/%E5%9C%A8Debian%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6/" title="在Debian安装软件">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">在Debian安装软件</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/28/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%AD%E7%9A%84%E5%8D%8F%E5%8F%98%E5%92%8C%E9%80%86%E5%8F%98/" title="面向对象中的协变和逆变">
+                        <span class="hidden-mobile">面向对象中的协变和逆变</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

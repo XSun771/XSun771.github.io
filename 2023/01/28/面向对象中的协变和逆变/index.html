@@ -1,0 +1,684 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sun, Xaiver">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="面向对象中的协变和逆变场景引入这篇知乎回答给了本文很大启发。 一个专门做荔枝买卖的中间商 Exchanger 从农民 Producer 手中收购来荔枝，然后将它卖给销售商 Consumer，从中赚取利润。这是一个很常见的模式，我们首先将这里的三个对象完全抽象出来： 123456789101112131415161718192021222324252627interface Product &amp;#12">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面向对象中的协变和逆变">
+<meta property="og:url" content="https://username.github.io/2023/01/28/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E4%B8%AD%E7%9A%84%E5%8D%8F%E5%8F%98%E5%92%8C%E9%80%86%E5%8F%98/index.html">
+<meta property="og:site_name" content="石沉溪洞">
+<meta property="og:description" content="面向对象中的协变和逆变场景引入这篇知乎回答给了本文很大启发。 一个专门做荔枝买卖的中间商 Exchanger 从农民 Producer 手中收购来荔枝，然后将它卖给销售商 Consumer，从中赚取利润。这是一个很常见的模式，我们首先将这里的三个对象完全抽象出来： 123456789101112131415161718192021222324252627interface Product &amp;#12">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-28T02:40:21.000Z">
+<meta property="article:modified_time" content="2023-05-23T13:38:04.457Z">
+<meta property="article:author" content="Sun, Xaiver">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>面向对象中的协变和逆变 - 石沉溪洞</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"username.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>石沉溪洞</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="面向对象中的协变和逆变"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-28 10:40" pubdate>
+          2023年1月28日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          40 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">面向对象中的协变和逆变</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="面向对象中的协变和逆变"><a href="#面向对象中的协变和逆变" class="headerlink" title="面向对象中的协变和逆变"></a>面向对象中的协变和逆变</h1><h2 id="场景引入"><a href="#场景引入" class="headerlink" title="场景引入"></a>场景引入</h2><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/38861374/answer/1175835396">这篇知乎回答</a>给了本文很大启发。</p>
+<p>一个专门做荔枝买卖的中间商 Exchanger 从农民 Producer 手中收购来荔枝，然后将它卖给销售商 Consumer，从中赚取利润。这是一个很常见的模式，我们首先将这里的三个对象完全抽象出来：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-keyword">interface</span> <span class="hljs-title class_">Product</span> &#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">getPrice</span><span class="hljs-params">()</span></span>: <span class="hljs-built_in">Int</span><br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 本例中中间商，农民，经销商在本例中是水果市场的。</span><br><span class="hljs-comment"> * 但将它们复用在家电市场，木材市场也不无不可。</span><br><span class="hljs-comment"> * 因而这里应当都使用泛型对此加以抽象。</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Exchanger</span>&lt;<span class="hljs-type">T : Product</span>&gt; &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> balance: <span class="hljs-built_in">Double</span> = <span class="hljs-number">0.0</span>;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">exchange</span><span class="hljs-params">(producer: <span class="hljs-type">Producer</span>&lt;<span class="hljs-type">T</span>&gt;, consumer: <span class="hljs-type">Consumer</span>&lt;<span class="hljs-type">T</span>&gt;)</span></span> &#123;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Producer</span>&lt;<span class="hljs-type">T : Product</span>&gt; &#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">produce</span><span class="hljs-params">()</span></span>: T &#123;<br>        <span class="hljs-comment">//省略</span><br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Consumer</span>&lt;<span class="hljs-type">T : Product</span>&gt; &#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">consume</span><span class="hljs-params">(product: <span class="hljs-type">T</span>)</span></span> &#123;<br>        <span class="hljs-comment">//省略</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>对于和专门做荔枝生意的中间商打交道的生产者，荔枝有很多不同的子种，比如妃子笑，元红等。某个生产者可能是专门只做一个子品种的荔枝的。而对于采购商，比如盒马生鲜，显然它们也不可能是只收荔枝的。这两点反应在代码上，就可能形成如下第六行代码的情况：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-keyword">open</span> <span class="hljs-keyword">class</span> 水果 : Product;<br><span class="hljs-keyword">open</span> <span class="hljs-keyword">class</span> 荔枝 : 水果();<br><span class="hljs-keyword">open</span> <span class="hljs-keyword">class</span> 妃子笑 : 荔枝();<br><br><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">main</span><span class="hljs-params">(args: <span class="hljs-type">Array</span>&lt;<span class="hljs-type">String</span>&gt;)</span></span> &#123;<br>    <span class="hljs-keyword">val</span> exchanger = Exchanger&lt;荔枝&gt;();<br>    exchanger.exchange(Producer&lt;妃子笑&gt;(), Consumer&lt;水果&gt;()); <span class="hljs-comment">//line#6</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然而，就 kotlin 来说，此时编译器检查是通不过的，因为编译器认为第六行的方法调用中，传入的两个实参，其类型 <code>Producer&lt;妃子笑&gt;</code> 和 <code>Consumer&lt;水果&gt;</code> 的在此处与形参规定的类型冲突。</p>
+<p>我想你不会对 <code>Consumer&lt;水果&gt;()</code> 用作方法的第二个参数是非法的这件事感到不解。因为水果显然比荔枝更抽象（即更父类）。而面向对象开发的惯例是方法的实参的类型，必须是参数要求的类型或那个类型的子类。</p>
+<p>然而，你可能对 <code>Producer&lt;妃子笑&gt;()</code> 用作 exchange方法的第一个参数（类型要求是 <code> Producer&lt;荔枝&gt;</code> ）是非法的感到不解。而对于这一疑惑，其本质是 <code>Producer&lt;妃子笑&gt;</code> 难道不是 <code>Producer&lt;荔枝&gt;</code> 的子类吗？</p>
+<p>那要回答这一问题，不妨类比地考量这个问题：<code>List&lt;Cat&gt;</code> 是不是 <code>List&lt;Animal&gt;</code> 的子类？</p>
+<p>从概念上说，说 Cat 是 Animal 的子类是绝对没问题的。那 <code>List&lt;Cat&gt;</code> 是 <code>List&lt;Animal&gt;</code> 的子类吗？不是！说A是B的子类，那么从逻辑上讲A就是B，B能做的事情，A一定全部能做。</p>
+<p>你可以向 <code>List&lt;Animal&gt;</code> 里放一只 Dog，你能往 <code>List&lt;Cat&gt;</code> 里放一只 Dog 吗？</p>
+<h2 id="设计出协变和逆变"><a href="#设计出协变和逆变" class="headerlink" title="设计出协变和逆变"></a>设计出协变和逆变</h2><p>几乎所有支持面向对象的语言都认同  <code>List&lt;Cat&gt;</code> 不是 <code>List&lt;Animal&gt;</code> 的子类这一逻辑，反应到 OOP 领域中便是在泛型上存在着继承关系，不等于大类型存在继承关系，因此 <code>Producer&lt;妃子笑&gt;</code> 的实例作为要求 <code>Producer&lt;荔枝&gt;</code> 类型的参数不合法。然而，这个场景是真实存在且可能发生的，难道 OOP 对一个如此真实如此确实需要解决的场景束手无策？</p>
+<p>OOP 领域的专家和语言开发者对这一问题投入了充分的审慎的思考，设计了协变和逆变。</p>
+<p>让我们回到刚才的情形和代码，对 exchange 的方法咬文嚼字一下：，<code>fun exchange(producer: Producer&lt;荔枝&gt;, consumer: Consumer&lt;荔枝&gt;)</code> 在形参上表达的意思是：</p>
+<ul>
+<li>a 专门生产荔枝的生产者的子类</li>
+<li>b 专门买荔枝的消费者的子类</li>
+</ul>
+<p>而我们想要表达的其实是：</p>
+<ul>
+<li>c 专门生产荔枝（荔枝的各种子品类都有种）或专门生产荔枝子类（比如只种植元红这一种的荔枝）的生产者</li>
+<li>d 专门买荔枝或者采购范围内有荔枝的消费者</li>
+</ul>
+<p>请注意『的子类』的位置。</p>
+<p>即语言设计者应当设计一些新的关键字或新的模式，使其能表达 c 或 d 项的含义。</p>
+<p>协变和逆变便是对应 c 项和 d 项的术语。out 和 in 便是 Kotlin 开发者为协变和逆变设计的关键字。</p>
+<p>更加准确地说，在 OOP 中，如果类型A是类型B的子类，对于一个使用泛型的类型C：当需要将类型 <code>C&lt;A,T,R...&gt;</code> 的实例用作形参类型为 <code>C&lt;B,T,R...&gt;</code> 的实参时，则称为允许协变；当需要将类型 <code>C&lt;B,T,R...&gt;</code> 的实例用作形参类型为C&lt;A,T,R…&gt;的实参时，则称为允许逆变。</p>
+<p>那么落实到 Kotlin 这一语言中，如何支持这里的协变和逆变呢？答案是这样的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">exchange</span><span class="hljs-params">(producer: <span class="hljs-type">Producer</span>&lt;<span class="hljs-type">out</span> <span class="hljs-type">T</span>&gt;, consumer: <span class="hljs-type">Consumer</span>&lt;<span class="hljs-type">in</span> <span class="hljs-type">T</span>&gt;)</span></span> &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>相比于之前，多了 out 和 in 关键字，用来表达在第一个参数上，校验传入的实例的类型时允许协变，在第二个参数上，传入的实例的类型允许发生逆变。具体地来说：</p>
+<p>由于 out 关键字，传 <code>Producer&lt;妃子笑&gt;</code> 类型实例作第一个参数，OK，但是想在这里用 <code>Producer&lt;水果&gt;</code> 类型的实例做实参还是不行。</p>
+<p>由于 in 关键字，传 <code>Consumer&lt;水果&gt;</code> 类型实例作第二个参数，OK，但 <code>Consumer&lt;妃子笑&gt;</code> 类型的实例做第二个实参还是不行。</p>
+<p>那么 kotlin 为什么会选用 out 和 in 这两个单词来作为关键字呢？这是因为 kotlin 或者说 OOP 语言的开发者和实践者总结经验发现：</p>
+<ul>
+<li><strong>可以发生协变并应该对协变加以支持的情景（比如这里对 Producer 的使用），协变实参可以且应该仅可以对外输出（比如这里的 Producer，我们就只关心调用它的 produce 方法得到它输出的产品）。</strong></li>
+<li><strong>类似地，可以发生逆变且应该对逆变加以支持的情景（比如这里对 Consumer 的使用），都是逆变实参接收输入的场景（比如这里的 Consumer 通过 consume 方法获在接收输入）。</strong></li>
+</ul>
+<p>因此，用 out 对应协变场景，用 in 对应逆变场景。</p>
+<p>对于这一经验总结，是否能在数学领域上给出坚强的论证？我觉得可能是有的，但我确实没有找到。</p>
+<h2 id="out-和-in-的限制"><a href="#out-和-in-的限制" class="headerlink" title="out 和 in 的限制"></a>out 和 in 的限制</h2><p>上节说到 kotlin 用 out 来支持协变，用 in 来支持逆变。但是这一支持并不完全，或者说虽然允许了协变、逆变，但被声明可以进行协变、逆变处的参数的使用遭到了限制。</p>
+<ul>
+<li>被 out 支持了协变的类型声明的参数，它将被限制不能调用它的类所提供的方法里参数表中有『类型声明中包含被支持协变的泛型』的参数的方法。—— 协变总是发生在方法的返回值类型（函数的返回值相当于它的对外输出）上</li>
+<li>被 in 支持了逆变的类型声明的参数，它将被限制不能调用它的类所提供的方法里返回值类型的声明中包含被支持逆变的泛型的方法。—— 逆变总是发生在方法某个（些）参数的类型（函数的参数需要被传入，相当于获得）上。</li>
+</ul>
+<p>为了演示，我们突破逻辑，让类 Producer 也具有一个 Consumer 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Producer</span>&lt;<span class="hljs-type">T : Product</span>&gt; &#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">produce</span><span class="hljs-params">()</span></span>: T &#123;<br>        TODO();<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">consume</span><span class="hljs-params">(thing: <span class="hljs-type">T</span>)</span></span> &#123;<br>        TODO();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>并尝试在 <code>fun exchange(producer: Producer&lt;out T&gt;, consumer: Consumer&lt;in T&gt;)</code> 中使用：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">exchange</span><span class="hljs-params">(producer: <span class="hljs-type">Producer</span>&lt;<span class="hljs-type">out</span> <span class="hljs-type">T</span>&gt;, consumer: <span class="hljs-type">Consumer</span>&lt;<span class="hljs-type">in</span> <span class="hljs-type">T</span>&gt;)</span></span> &#123;<br>    <span class="hljs-keyword">val</span> product = producer.produce()<br>    producer.consume(product); <span class="hljs-comment">// line#3</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>编译器对第三行的代码报错。因为 exchange 方法声明第一个参数允许类型T协变。而 consume 函数的参数表中有一个 <code>thing: T</code> ，因而这个方法在 exchange 中不允许参数 producer 调用。</p>
+<p>样突破逻辑，让类 Consumer 有一个 produce 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Consumer</span>&lt;<span class="hljs-type">T : Product</span>&gt; &#123;<br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">consume</span><span class="hljs-params">(product: <span class="hljs-type">T</span>)</span></span> &#123;<br>        TODO();<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">produce</span><span class="hljs-params">()</span></span>: T &#123;<br>        TODO();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>同样实机尝试一下</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">exchange</span><span class="hljs-params">(producer: <span class="hljs-type">Producer</span>&lt;<span class="hljs-type">out</span> <span class="hljs-type">T</span>&gt;, consumer: <span class="hljs-type">Consumer</span>&lt;<span class="hljs-type">in</span> <span class="hljs-type">T</span>&gt;)</span></span> &#123;<br>    <span class="hljs-keyword">val</span> product: T = consumer.produce();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>同样报错。不过如果改为如下代码，即明确声明并不要求返回值的类型后可通过编译。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">exchange</span><span class="hljs-params">(producer: <span class="hljs-type">Producer</span>&lt;<span class="hljs-type">out</span> <span class="hljs-type">T</span>&gt;, consumer: <span class="hljs-type">Consumer</span>&lt;<span class="hljs-type">in</span> <span class="hljs-type">T</span>&gt;)</span></span> &#123;<br>    <span class="hljs-keyword">val</span> product: Any? = consumer.produce();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="限制的收益"><a href="#限制的收益" class="headerlink" title="限制的收益"></a>限制的收益</h2><p>举例说明吧。首先是相关基础代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-keyword">open</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span>(<span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> name: String)<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Buccaneer</span>(name: String): Person(name)<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Naruto</span>(name: String): Person(name)<br><br><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">trick</span><span class="hljs-params">(c: <span class="hljs-type">Container</span>&lt;<span class="hljs-type">out</span> <span class="hljs-type">Person</span>&gt;, person: <span class="hljs-type">Person</span>)</span></span> &#123;<br>    c.item = person; <span class="hljs-comment">// 此处报错因为 c.item = c.setItem, 而 setItem 形参表中有 item:T</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>第6行因为限制的存在会报错，因为 <code>c.item = this.item</code> 等价于 <code>c.setItem(this.item)</code> , 而 <code>setItem</code> 形参表中有 <code>item:T</code> 。</p>
+<p>如果限制不存在，以上代码均合法，那么如下代码也会是合法的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs kotlin"><span class="hljs-function"><span class="hljs-keyword">fun</span> <span class="hljs-title">main</span><span class="hljs-params">(args: <span class="hljs-type">Array</span>&lt;<span class="hljs-type">String</span>&gt;)</span></span> &#123;<br>    <span class="hljs-keyword">val</span> container = Container&lt;Buccaneer&gt;(Buccaneer(<span class="hljs-string">&quot;路飞&quot;</span>))<br>    trick(container, Container&lt;Naruto&gt;(Naruto(<span class="hljs-string">&quot;鸣人&quot;</span>))<br>    <span class="hljs-keyword">val</span> p: Buccaneer = container.person;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>进而我们在第四行从容器中取出的并不是预想的一个海贼，而是一个忍者。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">#设计模式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>面向对象中的协变和逆变</div>
+      <div>https://username.github.io/2023/01/28/面向对象中的协变和逆变/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sun, Xaiver</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01/28/Linux%E8%BF%90%E7%BB%B4/" title="Linux运维">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux运维</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/24/IDEA%E4%BD%BF%E7%94%A8%E7%AC%94%E8%AE%B0/" title="IDEA使用笔记">
+                        <span class="hidden-mobile">IDEA使用笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

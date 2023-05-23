@@ -1,0 +1,761 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sun, Xaiver">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="安装工具dpkg -i ... 用于 .deb 结尾的文件。.deb 结尾的文件通常是一个软件的安装包，可以借此直接安装软件。 dpkg -l 展示本地已安装的所有软件。与 | grep ... 结合可以查看本地已安装哪些包含 … 的软件。 apt-cache policy ... 可以查看软件在当前 apt 源中的可用版本Version table 属性）。如果所查询的软件已经安装在系统上，则">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Debian安装软件">
+<meta property="og:url" content="https://username.github.io/2023/01/28/%E5%9C%A8Debian%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6/index.html">
+<meta property="og:site_name" content="石沉溪洞">
+<meta property="og:description" content="安装工具dpkg -i ... 用于 .deb 结尾的文件。.deb 结尾的文件通常是一个软件的安装包，可以借此直接安装软件。 dpkg -l 展示本地已安装的所有软件。与 | grep ... 结合可以查看本地已安装哪些包含 … 的软件。 apt-cache policy ... 可以查看软件在当前 apt 源中的可用版本Version table 属性）。如果所查询的软件已经安装在系统上，则">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-01-28T06:22:14.000Z">
+<meta property="article:modified_time" content="2023-05-23T13:38:04.457Z">
+<meta property="article:author" content="Sun, Xaiver">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>在Debian安装软件 - 石沉溪洞</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"username.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>石沉溪洞</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="在Debian安装软件"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-28 14:22" pubdate>
+          2023年1月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          97 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">在Debian安装软件</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="安装工具"><a href="#安装工具" class="headerlink" title="安装工具"></a>安装工具</h1><p><code>dpkg -i ...</code> 用于 .deb 结尾的文件。.deb 结尾的文件通常是一个软件的安装包，可以借此直接安装软件。</p>
+<p><code>dpkg -l</code> 展示本地已安装的所有软件。与 <code>| grep ...</code> 结合可以查看本地已安装哪些包含 … 的软件。</p>
+<p><code>apt-cache policy ...</code> 可以查看软件在当前 apt 源中的可用版本Version table 属性）。如果所查询的软件已经安装在系统上，则 Installed 属性会指示安装在系统上的属性。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@debian11-cicd:~<span class="hljs-comment"># apt-cache policy nginx</span><br>nginx:<br>  已安装：(无)<br>  候选： 1.18.0-6.1+deb11u3<br>  版本列表：<br>     1.18.0-6.1+deb11u3 500<br>        500 http://mirrors.huaweicloud.com/debian bullseye/main amd64 Packages<br>        500 http://security.debian.org/debian-security bullseye-security/main amd64 Packages<br></code></pre></td></tr></table></figure>
+
+<p><code>apt-get install ...</code> 时的默认版本是 <code>apt-cache policy</code> 查询的结果的 Candidate 属性）以及当前是否安装（Installed 属性）。</p>
+<p><code>apt-cache madison ...</code> 可以查看软件在当前 apt 源中的所有版本以及如果使用这个版本的话将使用什么源。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@VM-133-145-debian:~/download<span class="hljs-comment"># apt-cache madison erlang</span><br>    erlang | 1:19.2.1+dfsg-2+deb9u3 | http://mirrors.tencentyun.com/debian stretch/main amd64 Packages<br>    erlang | 1:19.2.1+dfsg-2+deb9u3 | http://mirrors.tencentyun.com/debian stretch/main i386 Packages<br>    erlang | 1:19.2.1+dfsg-2+deb9u1 | http://mirrors.tencentyun.com/debian-security stretch/updates/main amd64 Packages<br>    erlang | 1:19.2.1+dfsg-2+deb9u1 | http://mirrors.tencentyun.com/debian-security stretch/updates/main i386 Packages<br>    erlang | 1:19.2.1+dfsg-2+deb9u3 | http://mirrors.tencentyun.com/debian stretch/main Sources<br>    erlang | 1:19.2.1+dfsg-2+deb9u1 | http://mirrors.tencentyun.com/debian-security stretch/updates/main Sources<br>N: Ignoring file <span class="hljs-string">&#x27;rabbitmq_rabbitmq-server&#x27;</span> <span class="hljs-keyword">in</span> directory <span class="hljs-string">&#x27;/etc/apt/sources.list.d/&#x27;</span> as it has no filename extension<br>N: Ignoring file <span class="hljs-string">&#x27;bintray.erlang&#x27;</span> <span class="hljs-keyword">in</span> directory <span class="hljs-string">&#x27;/etc/apt/sources.list.d/&#x27;</span> as it has an invalid filename extension<br></code></pre></td></tr></table></figure>
+
+<p><code>apt-get install ...=version</code> 可以在软件名后增补 <code>=version</code> 来强制指定安装软件的版本。这里的 version 只能是 apt-cache policy 或 apt-cache madison 中查出来的可用版本号。</p>
+<p>关于软件卸载：</p>
+<p><code>apt-get purge</code> 或 <code>apt-get --purge remove</code> 都是删除指定软件且不保留配置文件。</p>
+<p><code>apt-get autoremove</code> 移除系统当前不再需要的软件。会出现这种软件，一般是在安装A软件时，需要B软件作为基础库，随后A软件被移除了。</p>
+<p><code>apt-get remove</code> 删除已安装的软件包但保留配置文件。</p>
+<p>在删除过程中可能会出现居然需要用户同意安装某个软件的操作。为什么会这样？因为现在被删除的这个软件是其它某个软件的依赖，提示用户允许的要新安装的软件则是替换被删除软件来充当依赖的。</p>
+<p>实际上，这种情况的出现意味着用户执行删除软件的操作是不慎重的。如果要使用的软件B还依赖着软件A，就不应该移除软件A。或者应该先完成对软件B的不使用和移除。</p>
+<h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><p>docker 官方提供了如何在 debian 上安装 docker 的方式。<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/debian/#install-using-the-repository">传送门</a>。</p>
+<p>另外由于众所周知的原因，直接访问境外的 docker 下载源通常会很慢。清华大学镜像站为此提供了镜像服务以及相关的<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/">安装文档</a>。</p>
+<p>安装好 docker 之后需要使用 docker hub 下载和安装 docker image，对于国内服务器又需要配置 docker hub 的镜像。这里建议买的云服务器是谁，配谁的镜像。我用的是腾讯云，参考腾讯云的<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/1141/63910">快速入门文档</a>。</p>
+<h1 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h1><h2 id="从-apt-get-安装-nginx"><a href="#从-apt-get-安装-nginx" class="headerlink" title="从 apt-get 安装 nginx"></a>从 apt-get 安装 nginx</h2><p><code>sudo apt install nginx</code></p>
+<p>安装完成后，nginx 服务自动被注册在 systemctl 中。</p>
+<h2 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>从 <a target="_blank" rel="noopener" href="http://nginx.org/">Nginx 官网</a> 的下载页面中选择 Stable version 的不带 windows 的那个下载到云主机中进行手动编译安装。</p>
+<p>2022年12月13日，nginx 已经发布了稳定的 1.22 版本，而在 debian 11 上使用 ·apt-get cache policy nginx· 得到的 nginx 版本还在 1.18.x，所以我选择自己装。</p>
+<p>下载源码后需要编译安装，故需要阅读官方文档中 <a target="_blank" rel="noopener" href="http://nginx.org/en/docs/configure.html">Building nginx from Sources</a>。其安装方法简单来说就是解压缩下载到的源码压缩包后进入其解压后目录（该目录下应当有一个 configure 文件），随后以该目录为工作目录完成后续步骤：</p>
+<p>执行 <code>./configure</code> 命令</p>
+<p>如果只是简单学习使用 Nginx，所以啥配置项都不指定也够用。但如果要带 https 支持的话要带上参数 <code>--with-http_ssl_module</code> 即 <code>./configure --with-http_ssl_module</code>。</p>
+<p>但第一次执行并不能安装成功，遇到缺失 pcre 支持无法支持 http 模块功能的错误：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">./configure: error: <span class="hljs-keyword">the</span> HTTP rewrite module requires <span class="hljs-keyword">the</span> PCRE library.<br>You can either disable <span class="hljs-keyword">the</span> module <span class="hljs-keyword">by</span> <span class="hljs-keyword">using</span> <span class="hljs-comment">--without-http_rewrite_module</span><br>option, <span class="hljs-keyword">or</span> install <span class="hljs-keyword">the</span> PCRE library <span class="hljs-keyword">into</span> <span class="hljs-keyword">the</span> <span class="hljs-keyword">system</span>, <span class="hljs-keyword">or</span> build <span class="hljs-keyword">the</span> PCRE library<br>statically <span class="hljs-built_in">from</span> <span class="hljs-keyword">the</span> source <span class="hljs-keyword">with</span> nginx <span class="hljs-keyword">by</span> <span class="hljs-keyword">using</span> <span class="hljs-comment">--with-pcre=&lt;path&gt; option.</span><br></code></pre></td></tr></table></figure>
+
+<p>以 pcre debian 为关键词谷歌，得到 apt-get install libpcre3 libpcre3-dev 来安装相关库，解决这一问题。</p>
+<p>但在安装了这些之后仍然不成功，遇到 zlib 库的问题：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">./configure: error: <span class="hljs-keyword">the</span> HTTP gzip module requires <span class="hljs-keyword">the</span> zlib library.<br>You can either disable <span class="hljs-keyword">the</span> module <span class="hljs-keyword">by</span> <span class="hljs-keyword">using</span> <span class="hljs-comment">--without-http_gzip_module</span><br>option, <span class="hljs-keyword">or</span> install <span class="hljs-keyword">the</span> zlib library <span class="hljs-keyword">into</span> <span class="hljs-keyword">the</span> <span class="hljs-keyword">system</span>, <span class="hljs-keyword">or</span> build <span class="hljs-keyword">the</span> zlib library<br>statically <span class="hljs-built_in">from</span> <span class="hljs-keyword">the</span> source <span class="hljs-keyword">with</span> nginx <span class="hljs-keyword">by</span> <span class="hljs-keyword">using</span> <span class="hljs-comment">--with-zlib=&lt;path&gt; option.</span><br></code></pre></td></tr></table></figure>
+
+<p>以 zlib debian 为关键词谷歌，得到 sudo apt install zlib1g-dev 来安装 zlib 库，解决这一问题。</p>
+<p>第三次执行 .&#x2F;configure 终于成功，最后输出：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">Configuration summary<br>  + <span class="hljs-keyword">using</span> <span class="hljs-keyword">system</span> PCRE library<br>  + OpenSSL library is <span class="hljs-keyword">not</span> used<br>  + <span class="hljs-keyword">using</span> <span class="hljs-keyword">system</span> zlib library<br><br>  nginx path prefix: <span class="hljs-string">&quot;/usr/local/nginx&quot;</span><br>  nginx binary <span class="hljs-built_in">file</span>: <span class="hljs-string">&quot;/usr/local/nginx/sbin/nginx&quot;</span><br>  nginx modules path: <span class="hljs-string">&quot;/usr/local/nginx/modules&quot;</span><br>  nginx configuration prefix: <span class="hljs-string">&quot;/usr/local/nginx/conf&quot;</span><br>  nginx configuration <span class="hljs-built_in">file</span>: <span class="hljs-string">&quot;/usr/local/nginx/conf/nginx.conf&quot;</span><br>  nginx pid <span class="hljs-built_in">file</span>: <span class="hljs-string">&quot;/usr/local/nginx/logs/nginx.pid&quot;</span><br>  nginx error <span class="hljs-built_in">log</span> <span class="hljs-built_in">file</span>: <span class="hljs-string">&quot;/usr/local/nginx/logs/error.log&quot;</span><br>  nginx <span class="hljs-keyword">http</span> access <span class="hljs-built_in">log</span> <span class="hljs-built_in">file</span>: <span class="hljs-string">&quot;/usr/local/nginx/logs/access.log&quot;</span><br>  nginx <span class="hljs-keyword">http</span> client request body temporary <span class="hljs-built_in">files</span>: <span class="hljs-string">&quot;client_body_temp&quot;</span><br>  nginx <span class="hljs-keyword">http</span> proxy temporary <span class="hljs-built_in">files</span>: <span class="hljs-string">&quot;proxy_temp&quot;</span><br>  nginx <span class="hljs-keyword">http</span> fastcgi temporary <span class="hljs-built_in">files</span>: <span class="hljs-string">&quot;fastcgi_temp&quot;</span><br>  nginx <span class="hljs-keyword">http</span> uwsgi temporary <span class="hljs-built_in">files</span>: <span class="hljs-string">&quot;uwsgi_temp&quot;</span><br>  nginx <span class="hljs-keyword">http</span> scgi temporary <span class="hljs-built_in">files</span>: <span class="hljs-string">&quot;scgi_temp&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>之后再输入 make 指令即可完成安装。</p>
+<h3 id="交付-systemctl"><a href="#交付-systemctl" class="headerlink" title="交付 systemctl"></a>交付 systemctl</h3><p>参考<a target="_blank" rel="noopener" href="https://xaiversun.gitee.io/blog/2021/05/11/0xC/#%E5%B0%86%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85%E7%9A%84%E8%BD%AF%E4%BB%B6%E6%89%98%E7%AE%A1-systemctl">将编译安装的软件托管 systemctl</a>一节。</p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p><code>nginx -t</code> 可以检测配置文件是否存在问题。</p>
+<p>没有问题时会有如下输出：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs vim">nginx: the configuration <span class="hljs-keyword">file</span> /etc/nginx/nginx.<span class="hljs-keyword">conf</span> <span class="hljs-keyword">syntax</span> <span class="hljs-keyword">is</span> ok<br>nginx: configuration <span class="hljs-keyword">file</span> /etc/nginx/nginx.<span class="hljs-keyword">conf</span> test <span class="hljs-keyword">is</span> successful<br></code></pre></td></tr></table></figure>
+
+<p>输出中也透露了配置文件的具体路径：<code>/etc/nginx/nginx.conf</code></p>
+<h2 id="网站启用-https"><a href="#网站启用-https" class="headerlink" title="网站启用 https"></a>网站启用 https</h2><p>nginx 提供了 <a target="_blank" rel="noopener" href="http://nginx.org/en/docs/http/configuring_https_servers.html">Configuring HTTPS servers</a> 文档可以参考。</p>
+<p>同时随着 ACME2 技术的普及，SSL 证书的供应商可能会给出基于 ACME 技术部署 nginx https 证书的脚本。比如<a target="_blank" rel="noopener" href="https://blog.freessl.cn/acme-quick-start/">ACME v2证书自动化快速入门</a>一文。</p>
+<h1 id="MYSQL-5-7"><a href="#MYSQL-5-7" class="headerlink" title="MYSQL 5.7"></a>MYSQL 5.7</h1><h2 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h2><p>依据MySQL 官方的<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/linux-installation-debian.html">安装文档</a>：</p>
+<p>首先是下载一个 .deb 文件到云服务器中，随后对那个文件执行 <code>dpkg -i path_of_the_deb_file</code>，目的是将包含 MYSQL 5.7 的安装包的 APT 仓库加入到云服务器的 APT 仓库列表中。</p>
+<p>但是，这里使用 .deb 文件添加 MySQL 5.7 的官方安装源，会让 apt 从 MySQL 官方下载 MySQL，即可能出现之前安装 Docker 时下载速度比较慢的问题。所以还是需要使用<a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/mysql/">清华大学镜像站</a>。</p>
+<p>在安装时遇到了 gnupg is not installed 的问题：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">root</span>@VM-<span class="hljs-number">4</span>-<span class="hljs-number">3</span>-debian:~/downloads# dpkg -i mysql-apt-config_0.<span class="hljs-number">8</span>.<span class="hljs-number">16</span>-<span class="hljs-number">1</span>_all.deb<br><span class="hljs-attribute">dpkg</span>: regarding mysql-apt-config_0.<span class="hljs-number">8</span>.<span class="hljs-number">16</span>-<span class="hljs-number">1</span>_all.deb containing mysql-apt-config, pre-dependency problem:<br> <span class="hljs-attribute">mysql</span>-apt-config pre-depends <span class="hljs-literal">on</span> gnupg<br>  <span class="hljs-attribute">gnupg</span> is not installed.<br><br><span class="hljs-attribute">dpkg</span>: error processing archive mysql-apt-config_0.<span class="hljs-number">8</span>.<span class="hljs-number">16</span>-<span class="hljs-number">1</span>_all.deb (--install):<br> <span class="hljs-attribute">pre</span>-dependency problem - not installing mysql-apt-config<br><span class="hljs-attribute">Errors</span> were encountered while processing:<br> <span class="hljs-attribute">mysql</span>-apt-config_0.<span class="hljs-number">8</span>.<span class="hljs-number">16</span>-<span class="hljs-number">1</span>_all.deb<br></code></pre></td></tr></table></figure>
+
+<p>解决方法就是把它装了：<code>apt install gnupg</code>。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">apt-<span class="hljs-keyword">get</span> install mysql-<span class="hljs-keyword">server</span><br></code></pre></td></tr></table></figure>
+
+
+<p>如果使用清华镜像站的源，本应使用 <code>deb https://mirrors.tuna.tsinghua.edu.cn/mysql/apt/debian stretch mysql-5.6 mysql-5.7 mysql-8.0 mysql-tools</code> 填入 <code>/etc/apt/sources.list.d/mysql-community.list</code> 文件，但我只想安装 MySQL 5.7，所以删减为 <code>deb https://mirrors.tuna.tsinghua.edu.cn/mysql/apt/debian stretch mysql-5.7 mysql-tools</code>。</p>
+<p>帮助文档中的 <code>/etc/apt/sources.list.d/mysql-community.list</code> 要是不存在，就新建一个写。此后还需要 <code>apt-get update</code> 让 apt 更新使这一修改生效，然后再执行 “Installing MySQL with APT” 章节的内容。</p>
+<p>如果 MySQL 5.7 的安装是配置云服务器的第一步，那么很有可能无法使用 https 协议的清华镜像源。这件事会暴露在编辑 mysql-community.list 文件后的 apt-get update 后，错误信息如下：</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">E: The <span class="hljs-keyword">method</span> <span class="hljs-title function_">driver</span> /<span class="hljs-title function_">usr</span>/<span class="hljs-title function_">lib</span>/<span class="hljs-title function_">apt</span>/<span class="hljs-title function_">methods</span>/<span class="hljs-title function_">https</span> <span class="hljs-title function_">could</span> <span class="hljs-title function_">not</span> <span class="hljs-title function_">be</span> <span class="hljs-title function_">found</span>.<br><span class="hljs-title function_">N</span>: <span class="hljs-keyword">Is</span> the package apt-transport-https installed?<br>E: Failed <span class="hljs-keyword">to</span> fetch https:<span class="hljs-comment">//mirrors.cloud.tencent.com/mysql/apt/debian/dists/stretch/InRelease  </span><br>E: Some <span class="hljs-keyword">index</span> files failed <span class="hljs-keyword">to</span> download. They have been ignored, <span class="hljs-keyword">or</span> <span class="hljs-keyword">old</span> ones used instead.<br></code></pre></td></tr></table></figure>
+
+<p>错误提示中的第二行其实已经给出了解决方案。使用 <code>apt install apt-transport-https</code> 将缺失的包安装。再度执行 <code>apt update</code>，不再报错。</p>
+<p>现在，使用 <code>apt-cache policy mysql-server</code> 确定要安装的 mysql 版本为 5.7：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">root@VM-4-3-debian:~/downloads<span class="hljs-comment"># apt-cache policy mysql-server</span><br>mysql-server:<br>  Installed: (none)<br>  Candidate: 5.7.32-1debian10<br>  Version table:<br>     5.7.32-1debian10 500<br>        500 https://mirrors.cloud.tencent.com/mysql/apt/debian buster/mysql-5.7 amd64 Packages<br>        500 http://repo.mysql.com/apt/debian buster/mysql-5.7 amd64 Packages<br></code></pre></td></tr></table></figure>
+
+<p>确认过后可以输入执行 <code>apt-get install mysql-server</code> 开始安装。</p>
+<h2 id="允许被远程接入"><a href="#允许被远程接入" class="headerlink" title="允许被远程接入"></a>允许被远程接入</h2><p>MySQL 5.7 默认不允许远程主机接入。搜索 mysql 5.7 allow remote access，找到 StackOverflow 上的一个相关问题 <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/14779104/how-to-allow-remote-connection-to-mysql">How to allow remote connection to mysql</a>。</p>
+<blockquote>
+<p>What is disabled by default is remote root access. If you want to enable that, run this SQL command locally:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">ALL</span> <span class="hljs-keyword">PRIVILEGES</span> <span class="hljs-keyword">ON</span> *.* <span class="hljs-keyword">TO</span> <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;%&#x27;</span> IDENTIFIED <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;password&#x27;</span> <span class="hljs-keyword">WITH</span> <span class="hljs-keyword">GRANT</span> <span class="hljs-keyword">OPTION</span>;<br> FLUSH <span class="hljs-keyword">PRIVILEGES</span>;<br></code></pre></td></tr></table></figure>
+
+<p>And then find the following line and comment it out in your my.cnf file, which usually lives on &#x2F;etc&#x2F;mysql&#x2F;my.cnf on Unix&#x2F;OSX systems. In some cases the location for the file is &#x2F;etc&#x2F;mysql&#x2F;mysql.conf.d&#x2F;mysqld.cnf).</p>
+<p>If it’s a Windows system, you can find it in the MySQL installation directory, usually something like C:\Program Files\MySQL\MySQL Server 5.5\ and the filename will be my.ini.</p>
+<p>Change line</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf"><span class="hljs-attribute">bind-address</span> <span class="hljs-operator">=</span> <span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span><br></code></pre></td></tr></table></figure>
+
+<p>to</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c"><span class="hljs-meta">#bind-address = 127.0.0.1</span><br></code></pre></td></tr></table></figure>
+
+<p>And restart the MySQL server (Unix&#x2F;OSX, and Windows) for the changes to take effect.</p>
+</blockquote>
+<p>回答前半部分照做即可，只有代码中的 ‘password’ 里的 password 要换成真实的 mysql 的 root 用户的密码。</p>
+<p>但后半段，并不存在 <code>/etc/mysql/my.cnf</code> 这一文件，即便我自己新建然后添加 <code>#bind-address = 127.0.0.1</code> 的内容也仍然无用。但思路是明确的，我们要找到 mysql 的有效配置文件。</p>
+<p>翻看官方文档 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/server-configuration-defaults.html">5.1.2 Server Configuration Defaults</a></p>
+<blockquote>
+<p>For non-Windows platforms, no default option file is created during either the server installation or the data directory initialization process. Create your option file by following the instructions given in <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/option-files.html">Section 4.2.2.2</a>, “Using Option Files”. Without an option file, the server just starts with its default settings—see Section 5.1.2, “Server Configuration Defaults” on how to check those settings.</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/option-files.html">Section 4.2.2.2</a></p>
+<blockquote>
+<p>Most MySQL programs can read startup options from option files (sometimes called configuration files). Option files provide a convenient way to specify commonly used options so that they need not be entered on the command line each time you run a program.</p>
+<p>To determine whether a program reads option files, invoke it with the –help option. (For mysqld, use –verbose and –help.) If the program reads option files, <strong>the help message indicates which files it looks for and which option groups it recognizes.</strong></p>
+</blockquote>
+<p>所以在主机上输入使用 <code>mysqld --help</code> 命令。得到：</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs smali">mysqld  Ver 8.0.21 for Linux on x86_64 (MySQL Community Server - GPL)<br>Copyright (c) 2000, 2020, Oracle<span class="hljs-built_in"> and/or </span>its affiliates. All rights reserved.<br><br>Oracle is a registered trademark of Oracle Corporation<span class="hljs-built_in"> and/or </span>its<br>affiliates. Other names may be trademarks of their respective<br>owners.<br><br>Starts the MySQL database server.<br><br>Usage: mysqld [OPTIONS]<br><br>For more help options (several pages), use mysqld --verbose --help.<br></code></pre></td></tr></table></figure>
+
+<p>由于</p>
+<blockquote>
+<p>For more help options (several pages), use mysqld –verbose –help.</p>
+</blockquote>
+<p>执行 <code>mysqld --verbose --help &gt; ~/mysql-config.txt</code>，阅读时发现其中说</p>
+<blockquote>
+<p>Default options are read from the following files in the given order:<br>&#x2F;etc&#x2F;my.cnf &#x2F;etc&#x2F;mysql&#x2F;my.cnf ~&#x2F;.my.cnf</p>
+</blockquote>
+<p>其中 <code>·~/.my.cnf</code> 和 <code>/etc/my.cnf</code> 均不存在，而 <code>/etc/mysql/my.cnf</code> 存在且包含如下两行：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">!includedir <span class="hljs-regexp">/etc/my</span>sql<span class="hljs-regexp">/conf.d/</span><br>!includedir <span class="hljs-regexp">/etc/my</span>sql<span class="hljs-regexp">/mysql.conf.d/</span><br></code></pre></td></tr></table></figure>
+
+<p>在 &#x2F;etc&#x2F;mysql&#x2F;conf.d&#x2F; 下有一个 mysql.cnf 文件，不过其中啥也没有。</p>
+<p>而 &#x2F;etc&#x2F;mysql&#x2F;mysql.conf.d&#x2F; 下有一个 mysqld.cnf 文件，其中有东西：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#/etc/mysql/mysql.conf.d/mysqld.cnf</span><br>[mysqld]<br>pid-file    = /var/run/mysqld/mysqld.pid<br>socket        = /var/run/mysqld/mysqld.sock<br>datadir        = /var/lib/mysql<br>log-error    = /var/log/mysql/error.log<br><span class="hljs-comment"># By default we only accept connections from localhost</span><br>bind-address    = 127.0.0.1<br><span class="hljs-comment"># Disabling symbolic-links is recommended to prevent assorted security risks</span><br>symbolic-links=0<br></code></pre></td></tr></table></figure>
+
+<p>有 stackoverflow 回答里说的要注释的东西了，把它注释掉。</p>
+<p>然后 systemctl restart mysql 。这之后就可以连接了。</p>
+<h1 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h1><p><a target="_blank" rel="noopener" href="https://redis.io/docs/getting-started/installation/install-redis-on-linux/">Redis官方安装文档</a></p>
+<h1 id="Java-与-Maven"><a href="#Java-与-Maven" class="headerlink" title="Java 与 Maven"></a>Java 与 Maven</h1><h2 id="安装-2"><a href="#安装-2" class="headerlink" title="安装"></a>安装</h2><p>在 <a target="_blank" rel="noopener" href="https://www.injdk.cn/">Java I tell you</a> 中选择合适的 jdk 版本并下载到本地进行安装。此处我选择 Temurin 版本 （Adoptopenjdk自2020年7月交给Eclipse基金会，后改名Temurin）以及 jdk 17，<a target="_blank" rel="noopener" href="https://d6.injdk.cn/openjdk/adoptopenjdk/17/OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz">linux64.tar.gz</a> 文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> ~/download<br><span class="hljs-built_in">cd</span> ~/download<br>wget https://d6.injdk.cn/openjdk/adoptopenjdk/17/<br>OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz<br><span class="hljs-built_in">mkdir</span> /usr/local/temurin/<br>tar -xzf OpenJDK17U-jdk_x64_linux_hotspot_17.0.1_12.tar.gz -C /usr/local/temurin/<br><span class="hljs-built_in">cd</span> /usr/local/temurin/<br>root@debian11-cicd:/usr/local/temurin<span class="hljs-comment"># ls</span><br>jdk-17.0.1+12<br></code></pre></td></tr></table></figure>
+
+<p>然后编辑 <code>/etc/profile</code>，在最后新增如下几行</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">JAVA_HOME</span>=/usr/local/temurin/jdk-17.0.1+12<br><span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$JAVA_HOME/bin<br></code></pre></td></tr></table></figure>
+<p>执行 <code>source /etc/profile</code></p>
+<p>通过 <code>java --version</code> 验证，应该得到如下结果：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">root</span>@debian11-cicd:/usr/local/temurin# java --version<br><span class="hljs-attribute">openjdk</span> <span class="hljs-number">17</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span> <span class="hljs-number">2021</span>-<span class="hljs-number">10</span>-<span class="hljs-number">19</span><br><span class="hljs-attribute">OpenJDK</span> Runtime Environment Temurin-<span class="hljs-number">17</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>+<span class="hljs-number">12</span> (build <span class="hljs-number">17</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>+<span class="hljs-number">12</span>)<br><span class="hljs-attribute">OpenJDK</span> <span class="hljs-number">64</span>-Bit Server VM Temurin-<span class="hljs-number">17</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>+<span class="hljs-number">12</span> (build <span class="hljs-number">17</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>+<span class="hljs-number">12</span>, mixed mode, sharing)<br></code></pre></td></tr></table></figure>
+
+<p>maven 的安装与之类似。从<a target="_blank" rel="noopener" href="https://maven.apache.org/download.cgi">官网</a>获取最新包的路径，解压缩，配置环境变量。</p>
+<p>选 Binary tar.gz archive 是 maven 程序编译后的产品。Source tar.gz archive 是 maven 的源代码还没有编译过，怎么用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/download<br>wget https://dlcdn.apache.org/maven/maven-3/3.8.7/binaries/apache-maven-3.8.7-bin.tar.gz<br>tar -xzf apache-maven-3.8.7-bin.tar.gz -C /usr/local/<br></code></pre></td></tr></table></figure>
+
+<p>同样进行环境变量的配置</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">MAVEN_HOME</span>=/usr/local/apache-maven-3.8.7<br><span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$MAVEN_HOME/bin<br></code></pre></td></tr></table></figure>
+
+<h2 id="配置-maven-镜像"><a href="#配置-maven-镜像" class="headerlink" title="配置 maven 镜像"></a>配置 maven 镜像</h2><p>在 maven 的配置文件 <code>$MAVEN_HOME/conf/settings.xml</code> 中加入<a target="_blank" rel="noopener" href="https://developer.aliyun.com/mirror/maven/">阿里云的 maven 镜像站</a>的配置：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mirror</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>aliyunmaven<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">mirrorOf</span>&gt;</span>*<span class="hljs-tag">&lt;/<span class="hljs-name">mirrorOf</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>阿里云公共仓库<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>https://maven.aliyun.com/repository/public<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mirror</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="NodeJs-和-npm"><a href="#NodeJs-和-npm" class="headerlink" title="NodeJs 和 npm"></a>NodeJs 和 npm</h1><h2 id="NodeJs"><a href="#NodeJs" class="headerlink" title="NodeJs"></a>NodeJs</h2><p><a target="_blank" rel="noopener" href="https://nodejs.org/en/download/">Node.js 官网</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/nodejs/help/wiki/Installation">Node.js Linux 安装指南</a></p>
+<p>但我们不从官网下载，而是从<a target="_blank" rel="noopener" href="https://nodejs.org/dist/latest/">清华的镜像站</a>下载。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/download<br>wget https://nodejs.org/dist/latest/node-v19.5.0-linux-x64.tar.xz<br></code></pre></td></tr></table></figure>
+
+<p>随后按照文档操作即可</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">mkdir -p <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/lib/</span>nodejs<br>tar -xJvf node-v19.<span class="hljs-number">5.0</span>-linux-x64.tar.xz -C <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/lib/</span>nodejs<br></code></pre></td></tr></table></figure>
+
+<p>文档说在 <code>~/.profile</code> 里设置环境变量，保守了。直接在 <code>/etc/profile</code> 最末继续插入就好。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">export</span> <span class="hljs-attribute">NODE_JS_HOME</span>=/usr/local/lib/nodejs/node-v19.5.0-linux-x64<br><span class="hljs-built_in">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$NODE_JS_HOME</span>/bin:$PATH<br></code></pre></td></tr></table></figure>
+
+<h2 id="npm-配置镜像"><a href="#npm-配置镜像" class="headerlink" title="npm 配置镜像"></a>npm 配置镜像</h2><p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/mirror/NPM?spm=a2c6h.13651102.0.0.30da1b11l49Cj4">阿里云 npm 镜像站</a></p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs arduino">npm config set registry https:<span class="hljs-comment">//registry.npmmirror.com/</span><br>npm config get registry<br></code></pre></td></tr></table></figure>
+
+
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux/">#Linux</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>在Debian安装软件</div>
+      <div>https://username.github.io/2023/01/28/在Debian安装软件/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sun, Xaiver</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/23/Mutual-SSL-in-Spring-With-Self-Signed-Certificate/" title="Mutual SSL in Spring With Self-Signed Certificate">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Mutual SSL in Spring With Self-Signed Certificate</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/28/Linux%E8%BF%90%E7%BB%B4/" title="Linux运维">
+                        <span class="hidden-mobile">Linux运维</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
